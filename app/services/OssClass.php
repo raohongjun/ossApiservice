@@ -36,7 +36,7 @@ class OssClass
         $this->accessKeySecret = config('oss.AccessKeySecret');
 
         //"<您选定的OSS数据中心访问域名，例如oss-cn-hangzhou.aliyuncs.com>";
-        $this->endpoint = $segment && config('oss.useInternal') ? config('oss.ossServerInternal') : config('oss.ossServer');
+        $this->endpoint = $segment || config('oss.useInternal') ? config('oss.ossServerInternal') : config('oss.ossServer');
 
         //bucket名称
         $this->bucket = $bucket ? $bucket : config('oss.OssBucket');
