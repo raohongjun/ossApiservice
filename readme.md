@@ -3,6 +3,7 @@
 
 环境：php7 
 
+nginx root配置到public
 
 * 直接提交放在`home` `index`控制器中
 * curl 提交到`api` `UploadController.php`中
@@ -57,6 +58,9 @@ class uploadClass
     public static function curl_post(&$files, string $path = '', bool $filename = false)
     {
 
+        if (!file_exists( $filesname = $files['upload_img']['tmp_name'])) {
+            return '上传文件不存在！';
+        }
         $filesname = $files['upload_img']['tmp_name'];
         $mimetype = $files['upload_img']['type'];
         $postname = $files['upload_img']['name'];
