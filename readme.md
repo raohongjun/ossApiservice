@@ -20,10 +20,10 @@ nginx root配置到public
     <title>测试上传</title>
 </head>
 <body>
-<form method="post" enctype="multipart/form-data" action="uploadClass.php">
+ <form method="post" enctype="multipart/form-data" action="uploadClass.php">
     <input type="file" name="upload_img" accept="image/*"/>
     <input type="submit" value="上传">
-</form>
+ </form>
 </body>
 </html>
 ```
