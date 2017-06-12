@@ -23,17 +23,21 @@ class OssClass
 
     /**
      * OSS constructor.
+     *
      * @param string|null $bucket oss存储空间名 默认读取配置文件
-     * @param bool $segment 网段选择 默认外网
+     * @param bool        $segment 网段选择 默认外网
      */
     public function __construct(string $bucket = null, bool $segment = false)
     {
         // "<您从OSS获得的AccessKeyId>";
         $this->accessKeyId = config('oss.AccessKeyId');
+
         //"<您从OSS获得的AccessKeySecret>";
         $this->accessKeySecret = config('oss.AccessKeySecret');
+
         //"<您选定的OSS数据中心访问域名，例如oss-cn-hangzhou.aliyuncs.com>";
-        $this->endpoint = $segment ? config('oss.ossServerInternal') : config('oss.ossServer');
+        $this->endpoint = $segment && config('oss.useInternal') ? config('oss.ossServerInternal') : config('oss.ossServer');
+
         //bucket名称
         $this->bucket = $bucket ? $bucket : config('oss.OssBucket');
         try {
@@ -49,9 +53,10 @@ class OssClass
     // 默认上传文件使用内网，免流量费
 
     /**
-     * @param $file 文件对象
+     * @param      $file 文件对象
      * @param null $imgname 自定义文件名，不传就随机文件名
      * @param null $dir 自定义文件保存路径（文件夹），不传就默认
+     *
      * @return string
      */
     public function uploadContent(&$file, string $imgname = null, string $dir = null)
@@ -100,6 +105,7 @@ class OssClass
      * 删除存储在oss中的文件
      *
      * @param string $ossKey 存储的key（文件路径和文件名）
+     *
      * @return
      */
     public function deleteObject(string $filename)
@@ -118,9 +124,10 @@ class OssClass
     /**
      * 使用分片上传接口上传文件, 接口会根据文件大小决定是使用普通上传还是分片上传
      *
-     * @param $file 文件对象
+     * @param      $file 文件对象
      * @param null $imgname 自定义文件名，不传就随机文件名
      * @param null $dir 自定义文件保存路径（文件夹），不传就默认
+     *
      * @return null
      * @throws OssException
      */
@@ -152,7 +159,7 @@ class OssClass
              * @param string $bucket bucket名称
              * @param string $object object名称
              * @param string $file 需要上传的本地文件的路径
-             * @param array $options Key-Value数组
+             * @param array  $options Key-Value数组
              */
             $result = $this->ossClient->multiuploadFile($this->bucket, $filename, $realPath, array());
             if (!empty($result['info']['url']) && $result['info']['http_code'] == 200) {

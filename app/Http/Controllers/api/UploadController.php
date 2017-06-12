@@ -1,38 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
-use Illuminate\Http\Request;
 use App\Services\OssClass;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
-class IndexController extends Controller
+class UploadController extends Controller
 {
-
-
     /**
-     *
-     */
-    protected function index()
-    {
-        return view('index/index');
-    }
-
-    /**
+     * 远程curl请求api
      * @param Request $request
-     */
-    public function upload(Request $request)
-    {
-        $file = $request->file('upload_img');
-        $ossobj = new OssClass();
-        dd($ossobj);
-        //$res=$ossobj->uploadContent($file);
-        $res = $ossobj->multiuploadFile($file);
-
-    }
-
-
-    /**
-     * @param Request $request
+     * @return string
      */
     public function curlUpload(Request $request)
     {

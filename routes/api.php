@@ -18,4 +18,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 //中间件路由
-Route::middleware('checkfile')->post('curlUpload', 'UploadController@curlUpload');
+Route::middleware('checkfile')->post('curlUpload', 'api\UploadController@curlUpload')->name('curlUpload');
