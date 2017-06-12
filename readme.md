@@ -3,8 +3,10 @@
 
 环境：php7 
 
-直接提交放在home index控制器中
-curl 提交到api UploadController.php中
+
+* 直接提交放在`home` `index`控制器中
+* curl 提交到`api` `UploadController.php`中
+
 
 ```html
 <!doctype html>
