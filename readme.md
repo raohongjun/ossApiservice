@@ -1,51 +1,91 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+## oss laravel 调用方式
 
-## About Laravel
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>测试上传</title>
+</head>
+<body>
+<form method="post" enctype="multipart/form-data" action="uploadClass.php">
+    <input type="file" name="upload_img" accept="image/*"/>
+    <input type="submit" value="上传">
+</form>
+</body>
+</html>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+uploadClass.php
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications. A superb combination of simplicity, elegance, and innovation give you tools you need to build any application with which you are tasked.
+<?php
 
-## Learning Laravel
+if (!empty($_FILES) && isset($_FILES['upload_img']['tmp_name'])) {
+    /**
+     *
+     */
+    $res = uploadClass::curl_post($_FILES);
+    print_r($res);
+}
 
-Laravel has the most extensive and thorough documentation and video tutorial library of any modern web application framework. The [Laravel documentation](https://laravel.com/docs) is thorough, complete, and makes it a breeze to get started learning the framework.
+/**
+ * 上传文件类
+ */
+class uploadClass
+{
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 900 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
+    //const url = "http://raohongjun.laravel.com/api/curlUpload";
+    const url = "http://www.ossapiservice.com/api/curlUpload";
 
-## Laravel Sponsors
+    /**
+     * @param $files 文件对象
+     * @param $path  自定义文件上传路径（文件夹）
+     * @internal param string $postname 上传图片名称是否保留原名，默认重命名
+     * @return bool|mixed
+     */
+    public static function curl_post(&$files, string $path = '', bool $filename = false)
+    {
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](http://patreon.com/taylorotwell):
+        $filesname = $files['upload_img']['tmp_name'];
+        $mimetype = $files['upload_img']['type'];
+        $postname = $files['upload_img']['name'];
 
-- **[Vehikl](http://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Styde](https://styde.net)**
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
+        // 创建一个 cURL 句柄
+        $ch = curl_init(self::url);
+        // 创建一个 CURLFile 对象
+        $cfile = curl_file_create($filesname, $mimetype, $postname);
 
-## Contributing
+        // 设置 POST 数据
+        if (!empty($filename) || !empty($path)) {
+            $data = [
+                'upload_img' => $cfile,
+                'upload_path' => $path,
+                'upload_originalname' => $filename
+            ];
+        } else {
+            $data = array('upload_img' => $cfile);
+        }
+        //post提交
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        //避免ssl url 提交失败问题
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        //curl获取页面内容, 不直接输出
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        // 执行句柄
+        $info = curl_exec($ch);
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
+        if (curl_errno($ch)) {
+            var_dump(curl_errno($ch));
+            return FALSE;
+        }
+        curl_close($ch); // 关闭CURL会话
+        unset($files);
+        return $info; // 返回数据
+    }
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+}
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
