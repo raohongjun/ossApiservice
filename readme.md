@@ -6,9 +6,9 @@
 nginx root配置到public
 
 * 直接提交放在`home` `index`控制器中
-* curl 提交到`api` `UploadController.php`中
 
 
+* 下面是curl 提交方式，将提交到服务层`api` `UploadController.php`中
 ```html
 <!doctype html>
 <html>
@@ -36,7 +36,8 @@ if (!empty($_FILES) && isset($_FILES['upload_img']['tmp_name'])) {
     /**
      *
      */
-    $res = uploadClass::curl_post($_FILES);
+    $uploadClass = new uploadClass();
+    $res = $uploadClass->curl_post($_FILES);
     print_r($res);
 }
 
@@ -46,27 +47,63 @@ if (!empty($_FILES) && isset($_FILES['upload_img']['tmp_name'])) {
 class uploadClass
 {
 
-    //const url = "http://raohongjun.laravel.com/api/curlUpload";
-    const url = "http://www.ossapiservice.com/api/curlUpload";
+
+    /**
+     * @var int 最大上传的文件大小，单位是M
+     */
+    private $max_upload_size = 2;
+
+
+    //上传类型
+    private $allow_type = array(
+        'image/jpeg',
+    );
+
+    // 服务器地址
+    private $server_uri = 'http://www.ossapiservice.com/api/curlUpload';
+    /**
+     * @var string 错误信息
+     */
+    private $errMsg = '';
+
+    /**
+     * @var int 错误代码
+     */
+    private $errCode = 0;
 
     /**
      * @param $files 文件对象
      * @param $path  自定义文件上传路径（文件夹）
+     *
      * @internal param string $postname 上传图片名称是否保留原名，默认重命名
      * @return bool|mixed
      */
-    public static function curl_post(&$files, string $path = '', bool $filename = false)
+    public function curl_post(&$files, string $path = '', bool $filename = false)
     {
 
-        if (!file_exists( $filesname = $files['upload_img']['tmp_name'])) {
+
+        if (!file_exists($filesname = $files['upload_img']['tmp_name'])) {
             return '上传文件不存在！';
         }
-        
+
         $mimetype = $files['upload_img']['type'];
+
+        // 检查图片格式是否支持上传
+
+        if (false == $this->is_allow($mimetype)) {
+            return '不允许上传的类型';
+        }
+        $filesize = $files['upload_img']['size'];
+        $this->max_upload_size = (int)$this->max_upload_size * 1024 * 1024; // 转变为字节
+
+        if ($this->max_upload_size < $filesize) {
+            return '文件超出限制！';
+        }
+
         $postname = $files['upload_img']['name'];
 
         // 创建一个 cURL 句柄
-        $ch = curl_init(self::url);
+        $ch = curl_init($this->server_uri);
         // 创建一个 CURLFile 对象
         $cfile = curl_file_create($filesname, $mimetype, $postname);
 
@@ -100,7 +137,40 @@ class uploadClass
     }
 
 
+    /**
+     * 检查文件是否允许上传
+     *
+     * @param $buff
+     *
+     * @return bool
+     */
+    private function is_allow($buff)
+    {
+        if (!$buff) {
+            return false;
+        }
+        if (false == in_array($buff, $this->allow_type)) {
+            $this->setError(4, '文件类型不支持上传');
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 设置错误代码和错误信息
+     *
+     * @param $code
+     * @param $msg
+     */
+    private function setError($code, $msg)
+    {
+        $this->errCode = $code;
+        $this->errMsg = $msg;
+    }
+
+
 }
+
 ```
 
 ##有问题反馈
