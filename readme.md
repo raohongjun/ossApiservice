@@ -61,7 +61,7 @@ class uploadClass
         if (!file_exists( $filesname = $files['upload_img']['tmp_name'])) {
             return '上传文件不存在！';
         }
-        $filesname = $files['upload_img']['tmp_name'];
+        
         $mimetype = $files['upload_img']['type'];
         $postname = $files['upload_img']['name'];
 
