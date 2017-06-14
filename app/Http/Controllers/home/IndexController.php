@@ -25,7 +25,7 @@ class IndexController extends Controller
         $ossobj = new OssClass();
         //$res=$ossobj->uploadContent($file);
         $res = $ossobj->multiuploadFile($file);
-        dd($res);
+        return response()->json($res);
     }
 
 }

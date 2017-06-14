@@ -11,9 +11,8 @@ class UploadController extends Controller
     /**
      * 远程curl请求api
      * @param Request $request
-     * @return string
      */
-    public function curlUpload(Request $request)
+    public function curlUpload(Request $request) : array
     {
         if ($request->isMethod('post')) {
             $file = $request->file('upload_img');
