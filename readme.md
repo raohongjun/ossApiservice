@@ -32,13 +32,12 @@ uploadClass.php
 
 ```php
 <?php
-
 if (!empty($_FILES) && isset($_FILES['upload_img']['tmp_name'])) {
     /**
      *
      */
     $uploadClass = new uploadClass();
-    $res = $uploadClass->curl_post($_FILES);
+    $res = $uploadClass->uploadExamine($_FILES);
     print_r($res);
 }
 
@@ -73,68 +72,37 @@ class uploadClass
     private $errCode = 0;
 
     /**
-     * @param $files 文件对象
-     * @param $path  自定义文件上传路径（文件夹）
-     *
-     * @internal param string $postname 上传图片名称是否保留原名，默认重命名
-     * @return bool|mixed
+     * @param                       $files 文件对象
+     * @param string|自定义文件上传路径（文件夹） $path
+     * @param bool                  $filename 上传图片名称是否保留原名，默认重命名
+     * @return bool|mixed|string
      */
-    public function curl_post(&$files, string $path = '', bool $filename = false)
+    public function uploadExamine(&$files, ?string $path = '', ?bool $filename = false):string
     {
 
+        if (empty($files['upload_img'])) {
+            return '上传文件为空！';
+        }
 
-        if (!file_exists($filesname = $files['upload_img']['tmp_name'])) {
+        ["tmp_name" => $filesname, "type" => $mimetype, "size" => $filesize, "name" => $postname] = $files['upload_img'];
+
+        if (!file_exists($filesname)) {
             return '上传文件不存在！';
         }
 
-        $mimetype = $files['upload_img']['type'];
-
         // 检查图片格式是否支持上传
-
         if (false == $this->is_allow($mimetype)) {
             return '不允许上传的类型';
         }
-        $filesize = $files['upload_img']['size'];
         $this->max_upload_size = (int)$this->max_upload_size * 1024 * 1024; // 转变为字节
 
         if ($this->max_upload_size < $filesize) {
             return '文件超出限制！';
         }
-
-        $postname = $files['upload_img']['name'];
-
-        // 创建一个 cURL 句柄
-        $ch = curl_init($this->server_uri);
-        // 创建一个 CURLFile 对象
-        $cfile = curl_file_create($filesname, $mimetype, $postname);
-
-        // 设置 POST 数据
-        if (!empty($filename) || !empty($path)) {
-            $data = [
-                'upload_img' => $cfile,
-                'upload_path' => $path,
-                'upload_originalname' => $filename
-            ];
-        } else {
-            $data = array('upload_img' => $cfile);
-        }
-        //post提交
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        //避免ssl url 提交失败问题
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        //curl获取页面内容, 不直接输出
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        // 执行句柄
-        $info = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            var_dump(curl_errno($ch));
-            return FALSE;
-        }
-        curl_close($ch); // 关闭CURL会话
         unset($files);
-        return $info; // 返回数据
+        if (!empty($this)) {
+            return $this->postCurl($path, $filename, $filesname, $mimetype, $postname);
+        } // 返回数据
     }
 
 
@@ -169,9 +137,45 @@ class uploadClass
         $this->errMsg = $msg;
     }
 
+    /**
+     * @param string $path
+     * @param bool   $filename
+     * @param        $filesname
+     * @param        $mimetype
+     * @param        $postname
+     *
+     * @return mixed
+     */
+    private function postCurl(string $path, bool $filename, string $filesname, string $mimetype, string $postname)
+    {
+        // 创建一个 cURL 句柄
+        $ch = curl_init($this->server_uri);
+        // 创建一个 CURLFile 对象
+        $cfile = curl_file_create($filesname, $mimetype, $postname);
 
+        // 设置 POST 数据
+        if (!empty($filename) || !empty($path)) {
+            $data = [
+                'upload_img' => $cfile,
+                'upload_path' => $path,
+                'upload_originalname' => $filename
+            ];
+        } else {
+            $data = array('upload_img' => $cfile);
+        }
+        //post提交
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        //避免ssl url 提交失败问题
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        //curl获取页面内容, 不直接输出
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        // 执行句柄
+        $info = curl_exec($ch);
+        curl_close($ch);
+        return $info; // 关闭CURL会话
+    }
 }
-
 ```
 
 ##有问题反馈
