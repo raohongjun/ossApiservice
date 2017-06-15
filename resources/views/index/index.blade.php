@@ -17,26 +17,10 @@
         <div id="showurl" style="display: none;">
             <ul id="navTab" class="nav nav-tabs">
                 <li class="active"><a href="#urlcodes" data-toggle="tab">URL</a></li>
-                <li><a href="#htmlcodes" data-toggle="tab">HTML</a></li>
-                <li><a href="#bbcodes" data-toggle="tab">BBCode</a></li>
-                <li><a href="#markdowncodes" data-toggle="tab">Markdown</a></li>
-                <li><a href="#deletepanel" data-toggle="tab">Delete Link</a></li>
             </ul>
             <div id="navTabContent" class="tab-content">
                 <div class="tab-pane fade in active" id="urlcodes">
                     <pre style="margin-top: 5px;"><code id="urlcode"></code></pre>
-                </div>
-                <div class="tab-pane fade" id="htmlcodes">
-                    <pre style="margin-top: 5px;"><code id="htmlcode"></code></pre>
-                </div>
-                <div class="tab-pane fade" id="bbcodes">
-                    <pre style="margin-top: 5px;"><code id="bbcode"></code></pre>
-                </div>
-                <div class="tab-pane fade" id="markdowncodes">
-                    <pre style="margin-top: 5px;"><code id="markdown"></code></pre>
-                </div>
-                <div class="tab-pane fade" id="deletepanel">
-                    <pre style="margin-top: 5px;"><code id="deletecode"></code></pre>
                 </div>
             </div>
         </div>
@@ -58,20 +42,10 @@
 
                     if ($("showurl").css("display")) {
                         console.log(1);
-//                        $('#urlcode').append(response.data.url + "\n");
-//                        $('#htmlcode').append("&lt;img src=\"" + response.data.url + "\" alt=\"" + files[index].name + "\" title=\"" + files[index].name + "\" /&gt;" + "\n");
-//                        $('#bbcode').append("[img]" + response.data.url + "[/img]" + "\n");
-//                        $('#markdown').append("![" + files[index].name + "](" + response.data.url + ")" + "\n");
-//                        $('#deletecode').append(response.data.delete + "\n");
-
+                        $('#urlcode').append(response.url + "\n");
                     } else if (response.url) {
-                        console.log(response);
-//                        $("#showurl").show();
-//                        $('#urlcode').append(response.data.url + "\n");
-//                        $('#htmlcode').append("&lt;img src=\"" + response.data.url + "\" alt=\"" + files[index].name + "\" title=\"" + files[index].name + "\" /&gt;" + "\n");
-//                        $('#bbcode').append("[img]" + response.data.url + "[/img]" + "\n");
-//                        $('#markdown').append("![" + files[index].name + "](" + response.data.url + ")" + "\n");
-                        $('#deletecode').append(response.name + "\n");
+                        $("#showurl").show();
+                        $('#urlcode').append(response.url + "\n");
                     }
                 }
             });
@@ -97,4 +71,5 @@
         })();
     </script>
 @endsection
+
 
