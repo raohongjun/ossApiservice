@@ -17,5 +17,4 @@ Route::get('/', 'home\IndexController@index');
 Route::group(['prefix' => 'index', 'namespace' => 'home', 'middleware' => 'checkfile'], function () {
     //别名路由
     Route::post('upload', 'IndexController@upload')->name('upload');
-    Route::post('curlUpload', 'IndexController@curlUpload');
 });
