@@ -7,7 +7,6 @@
             <h1>图片上传</h1> 最大上传{{ ini_get('post_max_size')}}
         </div>
         <form enctype="multipart/form-data">
-            {{csrf_field()}}
             <div class="form-group">
                 <input id="upload_img" type="file" multiple class="file" data-overwrite-initial="false"
                        data-min-file-count="1" data-max-file-count="10" name="upload_img" accept="image/*">
@@ -33,6 +32,7 @@
                 maxFileSize: 5120,
                 maxFilesNum: 10,
                 maxFileCount: 10,
+                _token:'{{csrf_token()}}',
             });
             $('#upload_img').on('fileuploaded', function (event, data, previewId, index) {
                 var form = data.form, files = data.files, extra = data.extra, response = data.response,
