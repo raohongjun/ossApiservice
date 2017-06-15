@@ -4,6 +4,8 @@
 环境：php7 
 nginx root配置到public
 
+![image](https://github.com/raohongjun/ossApiservice/raw/master/public/imgs/1.png)
+
 项目配置完成完须要用 composer update下 导入阿里云oss sdk
 
 * 直接提交放在`home` `index`控制器中

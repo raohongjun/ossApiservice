@@ -31,7 +31,7 @@ class IndexControllerTest extends TestCase
     {
         $response = $this->json('POST', '/index/upload', [
             //模拟图片上传
-            'upload_img' => UploadedFile::fake()->image('/Users/raohongjun/Downloads/1.jpg')
+            'upload_img' => UploadedFile::fake()->image('/imgs/1.png')
         ]);
         $response
             //断言该响应具有给定的状态码。
